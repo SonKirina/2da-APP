@@ -11,7 +11,7 @@ st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="wide"
 )
 
-# Ocultar elementos de la interfaz de Streamlit y establecer estilo global
+# Ocultar elementos de la interfaz de Streamlit y establecer estilo global y visibilidad de etiquetas
 st.markdown(
     """
     <style>
@@ -31,6 +31,11 @@ st.markdown(
         color: #dcd1c0;
         font-size: 20px;
         margin: 25px 0;
+    }
+    /* Asegurar que las etiquetas de los inputs sean visibles en modo oscuro */
+    .stTextInput label, .stNumberInput label, .stRadio label {
+        color: #f2f1ed !important;
+        font-family: 'Times New Roman', serif;
     }
     </style>
 """,
@@ -206,7 +211,8 @@ invitation_html = f"""
 </html>
 """
 
-components.html(invitation_html, height=730, scrolling=False)
+# Altura aumentada para evitar que se corte el contenido de la tarjeta
+components.html(invitation_html, height=820, scrolling=False)
 
 # --- SECCIÓN DE CONFIRMACIÓN DE ASISTENCIA ---
 st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
@@ -235,7 +241,7 @@ with st.container():
   nombres_acompanantes = []
   if acompanantes > 0:
     st.markdown(
-        "<p style='color: #f2f1ed !important; font-weight: 600; margin-top: 15px; margin-bottom: 5px;'>Nombres de tus acompañantes:</p>",
+        "<p style='color: #f2f1ed !important; font-weight: 600; margin-top: 15px; margin-bottom: 5px; font-family: Times New Roman, serif;'>Nombres de tus acompañantes:</p>",
         unsafe_allow_html=True,
     )
     for i in range(int(acompanantes)):
