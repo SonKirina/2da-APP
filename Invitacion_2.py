@@ -191,7 +191,7 @@ html_content = f"""
         <!-- Foto de los novios cargada desde tu repositorio local -->
         <img src="{foto_src}" class="photo-frame" alt="Boda">
         
-        <div class="names">Carolina & Carlos</div>
+        <div class="names">Elizabeth & Ismael</div>
         
         <div class="message">
             Con amor y con la presencia de Dios entre nosotros, esperamos que este momento sea inolvidable.<br>
