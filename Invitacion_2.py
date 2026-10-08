@@ -211,10 +211,34 @@ invitation_html = f"""
 </html>
 """
 
-# Altura aumentada para evitar que se corte el contenido de la tarjeta
 components.html(invitation_html, height=820, scrolling=False)
 
-# --- SECCIÓN DE CONFIRMACIÓN DE ASISTENCIA ---
+# --- SECCIÓN NUESTRA HISTORIA ---
+st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
+st.markdown(
+    "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>NUESTRA HISTORIA</h3>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<p style='text-align: center; color: #dcd1c0; font-style: italic; font-size: 14px;'>Cada momento juntos nos ha traído hasta aquí...</p>",
+    unsafe_allow_html=True,
+)
+
+if foto_2_b64:
+  st.image(
+      f"data:image/jpeg;base64,{foto_2_b64}",
+      use_container_width=True,
+      caption="Nuestra Historia",
+  )
+
+if foto_3_b64:
+  st.image(
+      f"data:image/jpeg;base64,{foto_3_b64}",
+      use_container_width=True,
+      caption="Nuestra Historia",
+  )
+
+# --- SECCIÓN DE CONFIRMACIÓN DE ASISTENCIA (AL FINAL) ---
 st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
 st.markdown(
     "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>💌 Confirmación de Asistencia</h3>",
@@ -339,31 +363,6 @@ with st.container():
             """,
           unsafe_allow_html=True,
       )
-
-# --- SECCIÓN NUESTRA HISTORIA ---
-st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
-st.markdown(
-    "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>NUESTRA HISTORIA</h3>",
-    unsafe_allow_html=True,
-)
-st.markdown(
-    "<p style='text-align: center; color: #dcd1c0; font-style: italic; font-size: 14px;'>Cada momento juntos nos ha traído hasta aquí...</p>",
-    unsafe_allow_html=True,
-)
-
-if foto_2_b64:
-  st.image(
-      f"data:image/jpeg;base64,{foto_2_b64}",
-      use_container_width=True,
-      caption="Nuestra Historia",
-  )
-
-if foto_3_b64:
-  st.image(
-      f"data:image/jpeg;base64,{foto_3_b64}",
-      use_container_width=True,
-      caption="Nuestra Historia",
-  )
 
 st.markdown(
     "<div style='text-align: center; font-family: Brush Script MT, cursive; font-size: 26px; margin: 30px 0 10px 0; color: #dcd1c0;'>¡Gracias por acompañarnos!</div>",
