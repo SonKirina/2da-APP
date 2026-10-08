@@ -47,16 +47,21 @@ if fondo_b64:
 else:
   background_style = "background-color: #f2f1ed;"
 
-# 2. Cargar la foto de los novios (usando Foto_1.jpg detectada en tu repositorio)
-foto_path = "Foto_1.jpg"  # Puedes cambiar a Foto_2.jpg o Foto_3.jpg si lo deseas
-foto_novios_b64 = get_image_base64(foto_path)
+# 2. Cargar las fotos desde el repositorio
+foto_1_b64 = get_image_base64("Foto_1.jpg")
+foto_1_src = (
+    f"data:image/jpeg;base64,{foto_1_b64}"
+    if foto_1_b64
+    else "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
+)
 
-if foto_novios_b64:
-  foto_src = f"data:image/jpeg;base64,{foto_novios_b64}"
-else:
-  foto_src = "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
+foto_2_b64 = get_image_base64("Foto_2.jpg")
+foto_2_src = f"data:image/jpeg;base64,{foto_2_b64}" if foto_2_b64 else ""
 
-# HTML y CSS de la invitación optimizado para pantalla completa sin scroll general
+foto_3_b64 = get_image_base64("Foto_3.jpg")
+foto_3_src = f"data:image/jpeg;base64,{foto_3_b64}" if foto_3_b64 else ""
+
+# HTML y CSS de la invitación con la sección "Nuestra Historia"
 html_content = f"""
 <!DOCTYPE html>
 <html>
@@ -89,7 +94,6 @@ html_content = f"""
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
     }}
     .invitation-container::-webkit-scrollbar {{
         display: none;
@@ -161,8 +165,11 @@ html_content = f"""
     .section-title {{
         font-weight: bold;
         letter-spacing: 2px;
-        margin: 8px 0 2px 0;
+        margin: 15px 0 5px 0;
         font-size: 12px;
+        color: #2c2c2c;
+        border-top: 1px solid #dcd1c0;
+        padding-top: 12px;
     }}
     .btn-rsvp {{
         display: inline-block;
@@ -180,6 +187,20 @@ html_content = f"""
     .btn-rsvp:hover {{
         background-color: #3b352f;
     }}
+    .story-photo {{
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin: 8px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }}
+    .story-text {{
+        font-size: 11px;
+        font-style: italic;
+        color: #555;
+        margin-bottom: 8px;
+    }}
 </style>
 </head>
 <body>
@@ -189,7 +210,7 @@ html_content = f"""
             <div class="header-title">Wedding</div>
         </div>
         
-        <img src="{foto_src}" class="photo-frame" alt="Boda">
+        <img src="{foto_1_src}" class="photo-frame" alt="Boda">
         
         <div class="names">Carolina & Carlos</div>
         
@@ -220,12 +241,21 @@ html_content = f"""
             <div class="section-title">VESTIMENTA</div>
             <div style="font-style: italic; font-size: 12px; margin-bottom: 5px;">Formal</div>
             
-            <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 5px;">Confirma tu asistencia</div>
-            <div style="font-size: 8px; color: #777; margin-bottom: 2px;">POR FAVOR, CONFÍRNANOS VÍA WHATSAPP</div>
+            <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px;">Confirma tu asistencia</div>
+            <div style="font-size: 8px; color: #777; margin-bottom: 4px;">POR FAVOR, CONFÍRNANOS VÍA WHATSAPP</div>
             
             <a href="https://wa.me/5216670000000?text=¡Hola!%20Confirmo%20mi%20asistencia%20a%20su%20boda." target="_blank" class="btn-rsvp">CONFIRMA AQUÍ</a>
+        </div>
+
+        <!-- SECCIÓN NUESTRA HISTORIA -->
+        <div>
+            <div class="section-title">NUESTRA HISTORIA</div>
+            <div class="story-text">Cada momento juntos nos ha traído hasta aquí...</div>
             
-            <div style="font-family: 'Brush Script MT', cursive; font-size: 16px; margin-top: 8px; color: #4a4a4a;">
+            {"<img src='" + foto_2_src + "' class='story-photo' alt='Nuestra Historia'>" if foto_2_b64 else ""}
+            {"<img src='" + foto_3_src + "' class='story-photo' alt='Nuestra Historia'>" if foto_3_b64 else ""}
+            
+            <div style="font-family: 'Brush Script MT', cursive; font-size: 18px; margin: 15px 0 5px 0; color: #4a4a4a;">
                 ¡Gracias por acompañarnos!
             </div>
         </div>
