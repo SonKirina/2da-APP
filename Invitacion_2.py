@@ -61,7 +61,7 @@ foto_2_src = f"data:image/jpeg;base64,{foto_2_b64}" if foto_2_b64 else ""
 foto_3_b64 = get_image_base64("Foto_3.jpg")
 foto_3_src = f"data:image/jpeg;base64,{foto_3_b64}" if foto_3_b64 else ""
 
-# HTML y CSS de la invitación con imágenes completas (contain)
+# HTML y CSS de la invitación con galería optimizada
 html_content = f"""
 <!DOCTYPE html>
 <html>
@@ -112,11 +112,11 @@ html_content = f"""
     }}
     .photo-frame {{
         width: 100%;
-        max-height: 220px;
-        object-fit: contain;
-        border-radius: 4px;
+        height: auto;
+        border-radius: 6px;
         margin: 10px 0;
-        background-color: rgba(0,0,0,0.02);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        display: block;
     }}
     .names {{
         font-family: 'Brush Script MT', cursive, serif;
@@ -190,12 +190,11 @@ html_content = f"""
     }}
     .story-photo {{
         width: 100%;
-        max-height: 220px;
-        object-fit: contain;
-        border-radius: 4px;
-        margin: 8px 0;
-        background-color: rgba(0,0,0,0.02);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        height: auto;
+        border-radius: 6px;
+        margin: 10px 0;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        display: block;
     }}
     .story-text {{
         font-size: 11px;
