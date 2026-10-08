@@ -1,6 +1,7 @@
 import base64
 import os
 import streamlit as st
+import streamlit.components.v1 as components
 
 # Configuración de la página
 st.set_page_config(
@@ -8,7 +9,7 @@ st.set_page_config(
 )
 
 
-# Función segura para verificar y cargar la imagen de fondo desde el repositorio
+# Función para cargar la imagen de fondo desde el repositorio de GitHub
 def get_image_base64(file_path):
   if os.path.exists(file_path):
     with open(file_path, "rb") as f:
@@ -16,28 +17,35 @@ def get_image_base64(file_path):
   return None
 
 
-# Cargar el fondo
 fondo_b64 = get_image_base64("Fondo_5_brillo.jpg")
 
-# Si la imagen existe, se aplica como fondo con un tono translúcido; si no, usa color sólido
 if fondo_b64:
   background_css = f"""
-        background-image: linear-gradient(rgba(242, 241, 237, 0.92), rgba(242, 241, 237, 0.92)), url("data:image/jpeg;base64,{fondo_b64}");
-        background-size: cover;
-        background-position: center;
-    """
+    background-image: linear-gradient(rgba(242, 241, 237, 0.92), rgba(242, 241, 237, 0.92)), url("data:image/jpeg;base64,{fondo_b64}");
+    background-size: cover;
+    background-position: center;
+"""
 else:
   background_css = "background-color: #f2f1ed;"
 
-# Estilos CSS y estructura HTML unidos en una sola llamada segura
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
+# Código HTML y CSS de la invitación
+html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body {{
         background-color: #2b2b2b;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }}
     .invitation-container {{
-        max-width: 400px;
+        max-width: 380px;
+        width: 100%;
         margin: auto;
         {background_css}
         padding: 30px 20px;
@@ -46,6 +54,7 @@ st.markdown(
         font-family: 'Times New Roman', serif;
         color: #333333;
         text-align: center;
+        box-sizing: border-box;
     }}
     .header-year {{
         font-size: 26px;
@@ -133,8 +142,9 @@ st.markdown(
     .btn-rsvp:hover {{
         background-color: #3b352f;
     }}
-    </style>
-
+</style>
+</head>
+<body>
     <div class="invitation-container">
         <div class="header-year">2026</div>
         <div class="header-title">Wedding</div>
@@ -178,6 +188,9 @@ st.markdown(
             ¡Gracias por acompañarnos!
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
-)
+</body>
+</html>
+"""
+
+# Renderizar el HTML de manera aislada y correcta
+components.html(html_content, height=850, scrolling=True)
