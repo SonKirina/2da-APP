@@ -1,23 +1,35 @@
 import base64
+import os
 import streamlit as st
 
-
-# Función para leer la imagen desde el repositorio local de GitHub y convertirla a Base64
-def get_image_base64(file_path):
-  with open(file_path, "rb") as f:
-    data = f.read()
-  return base64.b64encode(data).decode()
-
-
-# Cargamos el fondo directamente desde el archivo en tu repositorio
-fondo_b64 = get_image_base64("Fondo_5_brillo.jpg")
-
-# Configuración de la página centrada para simular una invitación móvil
+# Configuración de la página
 st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="centered"
 )
 
-# Estilos CSS que utilizan tu imagen de fondo en Base64
+
+# Función segura para verificar y cargar la imagen de fondo desde el repositorio
+def get_image_base64(file_path):
+  if os.path.exists(file_path):
+    with open(file_path, "rb") as f:
+      return base64.b64encode(f.read()).decode()
+  return None
+
+
+# Cargar el fondo
+fondo_b64 = get_image_base64("Fondo_5_brillo.jpg")
+
+# Si la imagen existe, se aplica como fondo con un tono translúcido; si no, usa color sólido
+if fondo_b64:
+  background_css = f"""
+        background-image: linear-gradient(rgba(242, 241, 237, 0.92), rgba(242, 241, 237, 0.92)), url("data:image/jpeg;base64,{fondo_b64}");
+        background-size: cover;
+        background-position: center;
+    """
+else:
+  background_css = "background-color: #f2f1ed;"
+
+# Estilos CSS y estructura HTML unidos en una sola llamada segura
 st.markdown(
     f"""
     <style>
@@ -27,10 +39,7 @@ st.markdown(
     .invitation-container {{
         max-width: 400px;
         margin: auto;
-        /* Usamos tu imagen de fondo con una ligera capa translúcida encima para que el texto se lea perfectamente */
-        background-image: linear-gradient(rgba(242, 241, 237, 0.92), rgba(242, 241, 237, 0.92)), url("data:image/jpeg;base64,{fondo_b64}");
-        background-size: cover;
-        background-position: center;
+        {background_css}
         padding: 30px 20px;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -125,18 +134,11 @@ st.markdown(
         background-color: #3b352f;
     }}
     </style>
-    """,
-    unsafe_allow_html=True,
-)
 
-# Estructura HTML de la invitación
-st.markdown(
-    """
     <div class="invitation-container">
         <div class="header-year">2026</div>
         <div class="header-title">Wedding</div>
         
-        <!-- Foto de los novios -->
         <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600" class="photo-frame" alt="Boda">
         
         <div class="names">Carolina & Carlos</div>
@@ -170,13 +172,12 @@ st.markdown(
         <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px;">Confirma tu asistencia</div>
         <div style="font-size: 9px; color: #777; margin-bottom: 5px;">POR FAVOR, CONFÍRNANOS VÍA WHATSAPP</div>
         
-        <!-- Enlace directo para confirmar asistencia por WhatsApp -->
         <a href="https://wa.me/5216670000000?text=¡Hola!%20Confirmo%20mi%20asistencia%20a%20su%20boda." target="_blank" class="btn-rsvp">CONFIRMA AQUÍ</a>
         
         <div style="font-family: 'Brush Script MT', cursive; font-size: 20px; margin-top: 20px; color: #4a4a4a;">
             ¡Gracias por acompañarnos!
         </div>
     </div>
-""",
+    """,
     unsafe_allow_html=True,
 )
