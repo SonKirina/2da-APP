@@ -1,6 +1,3 @@
-import base64
-from io import BytesIO
-from PIL import Image
 import streamlit as st
 
 # Configuración de la página centrada para simular una invitación móvil
@@ -8,22 +5,12 @@ st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="centered"
 )
 
-# Panel lateral para cargar la foto
-st.sidebar.header("Personalización")
-uploaded_file = st.sidebar.file_uploader(
-    "Sube la foto de los novios", type=["jpg", "jpeg", "png"]
+# --- CONFIGURACIÓN DE LA IMAGEN DE GITHUB ---
+# Pega aquí el enlace "Raw" (enlace directo) de tu foto alojada en GitHub.
+# Ejemplo: "https://raw.githubusercontent.com/tu-usuario/tu-repositorio/main/tu-foto.jpg"
+GITHUB_IMAGE_URL = (
+    "Foto_5.jpg"
 )
-
-# Procesar la imagen cargada para adaptarla al diseño HTML
-if uploaded_file is not None:
-  image = Image.open(uploaded_file)
-  buffered = BytesIO()
-  image.save(buffered, format="JPEG")
-  img_str = base64.b64encode(buffered.getvalue()).decode()
-  img_src = f"data:image/jpeg;base64,{img_str}"
-else:
-  # Imagen por defecto si no se ha subido ninguna
-  img_src = "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
 
 # Estilos CSS para replicar la estructura visual de la tarjeta
 st.markdown(
@@ -134,14 +121,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Estructura HTML de la invitación con la fuente de imagen dinámica
+# Estructura HTML de la invitación usando la URL de la imagen en GitHub
 html_code = f"""
     <div class="invitation-container">
         <div class="header-year">2026</div>
         <div class="header-title">Wedding</div>
         
-        <!-- Imagen cargada dinámicamente -->
-        <img src="{img_src}" class="photo-frame" alt="Boda">
+        <!-- Imagen vinculada desde GitHub -->
+        <img src="{GITHUB_IMAGE_URL}" class="photo-frame" alt="Boda">
         
         <div class="names">Carolina & Carlos</div>
         
