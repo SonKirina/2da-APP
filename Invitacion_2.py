@@ -48,9 +48,9 @@ else:
   background_style = "background-color: #f2f1ed;"
 
 # 2. Cargar la foto de los novios desde tu repositorio (Cambia "Foto_Novios.jpg" por el nombre real de tu archivo)
-foto_novios_b64 = get_image_base64("Foto_Novios.jpg")
+foto_novios_b64 = get_image_base64("Foto_5.jpg")
 if foto_novios_b64:
-  foto_src = f"data:image/jpeg;base64,{foto_novios_b64}"
+  foto_src = f"data:image/jpeg;base64,{Foto_5}"
 else:
   # Imagen de respaldo por si el nombre del archivo no coincide exactamente
   foto_src = "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
