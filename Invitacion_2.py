@@ -212,7 +212,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- NUEVAS SECCIONES: MISA, FIESTA Y MESA DE REGALOS ---
+# --- SECCIONES: MISA, FIESTA Y MESA DE REGALOS ---
 st.markdown(
     """
     <div class="section-title">⛪ MISA</div>
@@ -244,11 +244,15 @@ st.markdown(
 # --- SECCIÓN NUESTRA HISTORIA ---
 st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
 st.markdown(
-    "<h3 style='text-align: center; color: #2c2c2c; font-family: Times New Roman, serif; font-size: 14px; letter-spacing: 2px; font-weight: bold;'>NUESTRA HISTORIA</h3>",
+    "<h3 style='text-align: center; color: #2c2c2c; font-family: Times New"
+    " Roman, serif; font-size: 14px; letter-spacing: 2px; font-weight:"
+    " bold;'>NUESTRA HISTORIA</h3>",
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='text-align: center; color: #555; font-style: italic; font-size: 12px; margin-bottom: 15px;'>Cada momento juntos nos ha traído hasta aquí...</p>",
+    "<p style='text-align: center; color: #555; font-style: italic; font-size:"
+    " 12px; margin-bottom: 15px;'>Cada momento juntos nos ha traído hasta"
+    " aquí...</p>",
     unsafe_allow_html=True,
 )
 
@@ -261,7 +265,9 @@ if foto_3_b64:
 # --- SECCIÓN DE CONFIRMACIÓN DE ASISTENCIA (AL FINAL) ---
 st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
 st.markdown(
-    "<h3 style='text-align: center; color: #2c2c2c; font-family: Times New Roman, serif; font-size: 14px; letter-spacing: 2px; font-weight: bold;'>💌 CONFIRMACIÓN DE ASISTENCIA</h3>",
+    "<h3 style='text-align: center; color: #2c2c2c; font-family: Times New"
+    " Roman, serif; font-size: 14px; letter-spacing: 2px; font-weight:"
+    " bold;'>💌 CONFIRMACIÓN DE ASISTENCIA</h3>",
     unsafe_allow_html=True,
 )
 
@@ -285,7 +291,9 @@ with st.container():
   nombres_acompanantes = []
   if acompanantes > 0:
     st.markdown(
-        "<p style='color: #2c2c2c !important; font-weight: bold; margin-top: 15px; margin-bottom: 5px; font-family: Times New Roman, serif;'>Nombres de tus acompañantes:</p>",
+        "<p style='color: #2c2c2c !important; font-weight: bold; margin-top:"
+        " 15px; margin-bottom: 5px; font-family: Times New Roman, serif;'>Nombres"
+        " de tus acompañantes:</p>",
         unsafe_allow_html=True,
     )
     for i in range(int(acompanantes)):
@@ -315,6 +323,80 @@ with st.container():
 
     if not nombre_clean:
       st.error(
-          "Por favor, ingresa tu nombre completo antes de enviar la confirmación."
+          "Por favor, ingresa tu nombre completo antes de enviar la"
+          " confirmación."
       )
     elif len(telefono_clean) != 10:
+      st.error(
+          "Por favor, ingresa un número de teléfono celular válido a 10"
+          " dígitos (ej. 6671234567)."
+      )
+    elif acompanantes > 0 and len(lista_nombres_acomp) < acompanantes:
+      st.error("Por favor, completa los nombres de todos tus acompañantes.")
+    else:
+      try:
+        df = pd.read_csv("asistentes.csv")
+      except FileNotFoundError:
+        df = pd.DataFrame(
+            columns=[
+                "Fecha_Registro",
+                "Nombre",
+                "Telefono",
+                "Asistencia",
+                "Acompañantes",
+                "Nombres_Acompañantes",
+                "Restricciones",
+                "Mesa",
+            ]
+        )
+
+      if "Telefono" not in df.columns:
+        df["Telefono"] = ""
+
+      cadena_acompanantes = (
+          ", ".join(lista_nombres_acomp) if lista_nombres_acomp else "Ninguno"
+      )
+
+      nuevo_dato = pd.DataFrame([
+          {
+              "Fecha_Registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+              "Nombre": nombre_clean,
+              "Telefono": telefono_clean,
+              "Asistencia": asistencia,
+              "Acompañantes": acompanantes,
+              "Nombres_Acompañantes": cadena_acompanantes,
+              "Restricciones": restricciones,
+              "Mesa": "Por asignar",
+          }
+      ])
+
+      df = pd.concat([df, nuevo_dato], ignore_index=True)
+      df.to_csv("asistentes.csv", index=False)
+
+      st.balloons()
+      st.markdown(
+          f"""
+            <div style="
+                background-color: #fcfbf9; 
+                padding: 16px; 
+                border-radius: 8px; 
+                border: 1px solid #dcd1c0;
+                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+                margin: 10px 0px;
+                text-align: center;
+                font-family: 'Times New Roman', serif;">
+                <span style="font-size: 18px; margin-right: 8px;">✅</span>
+                <span style="color: #2c2c2c; font-weight: bold;">
+                    ¡Muchas gracias <strong>{nombre_clean}</strong>! Hemos recibido tu confirmación.
+                </span>
+            </div>
+            """,
+          unsafe_allow_html=True,
+      )
+
+st.markdown(
+    "<div style='text-align: center; font-family: Brush Script MT, cursive;"
+    " font-size: 26px; margin: 30px 0 10px 0; color: #2c2c2c;'>¡Gracias por"
+    " acompañarnos!</div>",
+    unsafe_allow_html=True,
+)
