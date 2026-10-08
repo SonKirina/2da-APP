@@ -4,42 +4,10 @@ import os
 import re
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 
 # Configuración de la página en modo ancho
 st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="wide"
-)
-
-# Ocultar elementos de la interfaz de Streamlit y establecer estilo global y visibilidad de etiquetas
-st.markdown(
-    """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stApp {
-        background-color: #2b2b2b;
-    }
-    .block-container {
-        padding: 2rem 1rem !important;
-        max-width: 500px !important;
-        margin: auto;
-    }
-    .divider {
-        text-align: center;
-        color: #dcd1c0;
-        font-size: 20px;
-        margin: 25px 0;
-    }
-    /* Asegurar que las etiquetas de los inputs sean visibles en modo oscuro */
-    .stTextInput label, .stNumberInput label, .stRadio label {
-        color: #f2f1ed !important;
-        font-family: 'Times New Roman', serif;
-    }
-    </style>
-""",
-    unsafe_allow_html=True,
 )
 
 
@@ -63,68 +31,62 @@ else:
   background_style = "background-color: #f2f1ed;"
 
 foto_1_b64 = get_image_base64("Foto_1.jpg")
-foto_1_src = (
-    f"data:image/jpeg;base64,{foto_1_b64}"
-    if foto_1_b64
-    else "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
-)
-
 foto_2_b64 = get_image_base64("Foto_2.jpg")
 foto_3_b64 = get_image_base64("Foto_3.jpg")
 
-# Tarjeta principal de la invitación
-invitation_html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-    .invitation-card {{
-        width: 100%;
-        max-width: 420px;
-        margin: 0 auto;
+# CSS Global para convertir todo el contenedor principal en la tarjeta de invitación unificada
+st.markdown(
+    f"""
+    <style>
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header {{visibility: hidden;}}
+    
+    .stApp {{
+        background-color: #2b2b2b;
+    }}
+    
+    .block-container {{
         {background_style}
-        padding: 30px 20px;
+        max-width: 420px !important;
+        margin: 30px auto !important;
+        padding: 30px 20px !important;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         font-family: 'Times New Roman', serif;
-        color: #333333;
-        text-align: center;
-        box-sizing: border-box;
+        color: #333333 !important;
     }}
-    .header-year {{
+
+    /* Estilos de tipografía y elementos dentro de la tarjeta */
+    .inv-header-year {{
         font-size: 24px;
         letter-spacing: 3px;
         font-weight: bold;
         color: #2c2c2c;
+        text-align: center;
     }}
-    .header-title {{
+    .inv-header-title {{
         font-style: italic;
         font-size: 26px;
         margin-top: -3px;
         color: #555;
+        text-align: center;
     }}
-    .photo-frame {{
-        width: 100%;
-        height: auto;
-        border-radius: 6px;
-        margin: 15px 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        display: block;
-    }}
-    .names {{
+    .inv-names {{
         font-family: 'Brush Script MT', cursive, serif;
         font-size: 38px;
         color: #2c2c2c;
-        margin: 5px 0;
+        margin: 10px 0;
+        text-align: center;
     }}
-    .message {{
+    .inv-message {{
         font-size: 11px;
         line-height: 1.4;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: #555555;
         margin-bottom: 15px;
+        text-align: center;
         padding: 0 5px;
     }}
     .date-section {{
@@ -132,6 +94,7 @@ invitation_html = f"""
         border-top: 1px solid #dcd1c0;
         border-bottom: 1px solid #dcd1c0;
         padding: 10px 0;
+        text-align: center;
     }}
     .date-main {{
         font-style: italic;
@@ -156,6 +119,7 @@ invitation_html = f"""
         color: #555;
         margin: 10px 0;
         line-height: 1.3;
+        text-align: center;
     }}
     .section-title {{
         font-weight: bold;
@@ -165,83 +129,110 @@ invitation_html = f"""
         color: #2c2c2c;
         border-top: 1px solid #dcd1c0;
         padding-top: 15px;
+        text-align: center;
     }}
-</style>
-</head>
-<body>
-    <div class="invitation-card">
-        <div>
-            <div class="header-year">2026</div>
-            <div class="header-title">Wedding</div>
-        </div>
-        
-        <img src="{foto_1_src}" class="photo-frame" alt="Boda">
-        
-        <div class="names">Carolina & Carlos</div>
-        
-        <div class="message">
-            Con amor y con la presencia de Dios entre nosotros, esperamos que este momento sea inolvidable.<br>
-            Tenemos el honor de invitarlos a celebrar nuestra unión matrimonial.
-        </div>
-        
-        <div class="date-section">
-            <div style="font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #666;">Los esperamos el día</div>
-            <div class="date-main">Sábado</div>
-            <div class="date-day">21</div>
-            <div style="font-size: 10px; font-style: italic;">de</div>
-            <div class="date-month">Noviembre</div>
-        </div>
-        
-        <div class="event-details">
-            <b>MISA INICIA A LAS 18:00 HORAS</b><br>
-            Parroquia Santiago Apóstol, Pueblo Puc.
-        </div>
-        
-        <div class="event-details">
-            <b>RECEPCIÓN 20:00 HORAS</b><br>
-            Salón Yec
-        </div>
-        
-        <div>
-            <div class="section-title">VESTIMENTA</div>
-            <div style="font-style: italic; font-size: 12px; margin-bottom: 5px;">Formal</div>
-        </div>
-    </div>
-</body>
-</html>
-"""
+    .divider {{
+        text-align: center;
+        color: #dcd1c0;
+        font-size: 20px;
+        margin: 25px 0;
+    }}
+    
+    /* Adaptar etiquetas de Streamlit para que sean legibles en la tarjeta */
+    .stTextInput label, .stNumberInput label, .stRadio label {{
+        color: #2c2c2c !important;
+        font-family: 'Times New Roman', serif;
+        font-weight: bold;
+    }}
+    
+    /* Estilizar botón de envío */
+    .stButton button {{
+        background-color: #554d45 !important;
+        color: white !important;
+        font-family: 'Times New Roman', serif;
+        border-radius: 4px;
+        border: none;
+        width: 100%;
+    }}
+    .stButton button:hover {{
+        background-color: #3b352f !important;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-components.html(invitation_html, height=820, scrolling=False)
+# --- CONTENIDO DE LA INVITACIÓN ---
+st.markdown('<div class="inv-header-year">2026</div>', unsafe_allow_html=True)
+st.markdown('<div class="inv-header-title">Wedding</div>', unsafe_allow_html=True)
+
+if foto_1_b64:
+  st.image(f"data:image/jpeg;base64,{foto_1_b64}", use_container_width=True)
+
+st.markdown(
+    '<div class="inv-names">Carolina & Carlos</div>', unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="inv-message">
+        Con amor y con la presencia de Dios entre nosotros, esperamos que este momento sea inolvidable.<br>
+        Tenemos el honor de invitarlos a celebrar nuestra unión matrimonial.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="date-section">
+        <div style="font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #666;">Los esperamos el día</div>
+        <div class="date-main">Sábado</div>
+        <div class="date-day">21</div>
+        <div style="font-size: 10px; font-style: italic;">de</div>
+        <div class="date-month">Noviembre</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="event-details">
+        <b>MISA INICIA A LAS 18:00 HORAS</b><br>
+        Parroquia Santiago Apóstol, Pueblo Puc.
+    </div>
+    <div class="event-details">
+        <b>RECEPCIÓN 20:00 HORAS</b><br>
+        Salón Yec
+    </div>
+    <div class="section-title">VESTIMENTA</div>
+    <div style="font-style: italic; font-size: 12px; margin-bottom: 5px; text-align: center;">Formal</div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # --- SECCIÓN NUESTRA HISTORIA ---
 st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
 st.markdown(
-    "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>NUESTRA HISTORIA</h3>",
+    "<h3 style='text-align: center; color: #2c2c2c; font-family: Times New Roman, serif; font-size: 14px; letter-spacing: 2px; font-weight: bold;'>NUESTRA HISTORIA</h3>",
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<p style='text-align: center; color: #dcd1c0; font-style: italic; font-size: 14px;'>Cada momento juntos nos ha traído hasta aquí...</p>",
+    "<p style='text-align: center; color: #555; font-style: italic; font-size: 12px; margin-bottom: 15px;'>Cada momento juntos nos ha traído hasta aquí...</p>",
     unsafe_allow_html=True,
 )
 
 if foto_2_b64:
-  st.image(
-      f"data:image/jpeg;base64,{foto_2_b64}",
-      use_container_width=True,
-      caption="Nuestra Historia",
-  )
+  st.image(f"data:image/jpeg;base64,{foto_2_b64}", use_container_width=True)
 
 if foto_3_b64:
-  st.image(
-      f"data:image/jpeg;base64,{foto_3_b64}",
-      use_container_width=True,
-      caption="Nuestra Historia",
-  )
+  st.image(f"data:image/jpeg;base64,{foto_3_b64}", use_container_width=True)
 
 # --- SECCIÓN DE CONFIRMACIÓN DE ASISTENCIA (AL FINAL) ---
 st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
 st.markdown(
-    "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>💌 Confirmación de Asistencia</h3>",
+    "<h3 style='text-align: center; color: #2c2c2c; font-family: Times New Roman, serif; font-size: 14px; letter-spacing: 2px; font-weight: bold;'>💌 CONFIRMACIÓN DE ASISTENCIA</h3>",
     unsafe_allow_html=True,
 )
 
@@ -265,7 +256,7 @@ with st.container():
   nombres_acompanantes = []
   if acompanantes > 0:
     st.markdown(
-        "<p style='color: #f2f1ed !important; font-weight: 600; margin-top: 15px; margin-bottom: 5px; font-family: Times New Roman, serif;'>Nombres de tus acompañantes:</p>",
+        "<p style='color: #2c2c2c !important; font-weight: bold; margin-top: 15px; margin-bottom: 5px; font-family: Times New Roman, serif;'>Nombres de tus acompañantes:</p>",
         unsafe_allow_html=True,
     )
     for i in range(int(acompanantes)):
@@ -365,6 +356,6 @@ with st.container():
       )
 
 st.markdown(
-    "<div style='text-align: center; font-family: Brush Script MT, cursive; font-size: 26px; margin: 30px 0 10px 0; color: #dcd1c0;'>¡Gracias por acompañarnos!</div>",
+    "<div style='text-align: center; font-family: Brush Script MT, cursive; font-size: 26px; margin: 30px 0 10px 0; color: #2c2c2c;'>¡Gracias por acompañarnos!</div>",
     unsafe_allow_html=True,
 )
