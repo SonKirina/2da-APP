@@ -1,9 +1,29 @@
+import base64
+from io import BytesIO
+from PIL import Image
 import streamlit as st
 
 # Configuración de la página centrada para simular una invitación móvil
 st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="centered"
 )
+
+# Panel lateral para cargar la foto
+st.sidebar.header("Personalización")
+uploaded_file = st.sidebar.file_uploader(
+    "Sube la foto de los novios", type=["jpg", "jpeg", "png"]
+)
+
+# Procesar la imagen cargada para adaptarla al diseño HTML
+if uploaded_file is not None:
+  image = Image.open(uploaded_file)
+  buffered = BytesIO()
+  image.save(buffered, format="JPEG")
+  img_str = base64.b64encode(buffered.getvalue()).decode()
+  img_src = f"data:image/jpeg;base64,{img_str}"
+else:
+  # Imagen por defecto si no se ha subido ninguna
+  img_src = "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
 
 # Estilos CSS para replicar la estructura visual de la tarjeta
 st.markdown(
@@ -114,15 +134,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Estructura HTML de la invitación
-st.markdown(
-    """
+# Estructura HTML de la invitación con la fuente de imagen dinámica
+html_code = f"""
     <div class="invitation-container">
         <div class="header-year">2026</div>
         <div class="header-title">Wedding</div>
         
-        <!-- Imagen de los novios (puedes cambiar el enlace por tu propia foto) -->
-        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600" class="photo-frame" alt="Boda">
+        <!-- Imagen cargada dinámicamente -->
+        <img src="{img_src}" class="photo-frame" alt="Boda">
         
         <div class="names">Carolina & Carlos</div>
         
@@ -162,6 +181,6 @@ st.markdown(
             ¡Gracias por acompañarnos!
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
-)
+"""
+
+st.markdown(html_code, unsafe_allow_html=True)
