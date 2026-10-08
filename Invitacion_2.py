@@ -1,31 +1,42 @@
 import base64
 import os
 import streamlit as st
-import streamlit.components.v1 as components
 
-# Configuración de la página (ancho completo)
+# Configuración de la página en modo ancho completo (wide)
 st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="wide"
 )
 
-# Ocultar los elementos de cabecera y pie de página predeterminados de Streamlit para ganar espacio limpio
-hide_streamlit_style = """
+# Estilos CSS globales para eliminar márgenes de Streamlit y forzar pantalla completa
+st.markdown(
+    """
     <style>
+    /* Ocultar elementos de la interfaz de Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* Eliminar márgenes y padding del contenedor principal de Streamlit */
     .block-container {
-        padding-top: 0rem;
-        padding-bottom: 0rem;
-        padding-left: 0rem;
-        padding-right: 0rem;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+    
+    /* Fondo general de la aplicación a pantalla completa */
+    .stApp {
+        background-color: #2b2b2b;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
     }
     </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
-# Función para cargar la imagen de fondo desde el repositorio de GitHub
+# Función para cargar la imagen de fondo desde el repositorio local de GitHub
 def get_image_base64(file_path):
   if os.path.exists(file_path):
     with open(file_path, "rb") as f:
@@ -44,122 +55,124 @@ if fondo_b64:
 else:
   background_css = "background-color: #f2f1ed;"
 
-# Código HTML y CSS de la invitación optimizado para pantalla completa sin scroll interno
-html_content = f"""
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
+# Estructura HTML y CSS adaptada para ocupar el 100% de la pantalla sin scroll general
+invitation_html = f"""
 <style>
-    html, body {{
-        background-color: #2b2b2b;
-        margin: 0;
-        padding: 0;
-        width: 100%;
+    .invitation-fullscreen {{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
         height: 100vh;
+        {background_css}
         display: flex;
         justify-content: center;
         align-items: center;
-        overflow: hidden; /* Elimina cualquier barra de scroll */
-    }}
-    .invitation-container {{
-        max-width: 380px;
-        width: 100%;
-        max-height: 95vh;
-        {background_css}
-        padding: 25px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        box-sizing: border-box;
+        overflow-y: auto;
         font-family: 'Times New Roman', serif;
         color: #333333;
-        text-align: center;
-        box-sizing: border-box;
-        overflow-y: auto; /* Si el contenido sobrepasa la pantalla móvil, se desplaza internamente de forma suave */
     }}
-    /* Ocultar barra de scroll interna en navegadores modernos */
-    .invitation-container::-webkit-scrollbar {{
+    
+    .invitation-card {{
+        width: 100%;
+        max-width: 420px;
+        min-height: 100vh;
+        background: transparent;
+        padding: 30px 20px;
+        box-sizing: border-box;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }}
+
+    /* Ocultar barra de desplazamiento interna si el contenido es largo en algunos dispositivos */
+    .invitation-fullscreen::-webkit-scrollbar {{
         display: none;
     }}
+
     .header-year {{
-        font-size: 24px;
+        font-size: 26px;
         letter-spacing: 3px;
         font-weight: bold;
         color: #2c2c2c;
     }}
     .header-title {{
         font-style: italic;
-        font-size: 26px;
+        font-size: 28px;
         margin-top: -3px;
         color: #555;
     }}
     .photo-frame {{
         width: 100%;
-        height: 220px;
+        height: 250px;
         object-fit: cover;
         border-radius: 4px;
-        margin: 12px 0;
+        margin: 15px 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }}
     .names {{
         font-family: 'Brush Script MT', cursive, serif;
-        font-size: 36px;
+        font-size: 40px;
         color: #2c2c2c;
-        margin: 8px 0;
+        margin: 10px 0;
     }}
     .message {{
-        font-size: 10.5px;
-        line-height: 1.4;
+        font-size: 11px;
+        line-height: 1.5;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: #555555;
-        margin-bottom: 15px;
-        padding: 0 5px;
+        margin-bottom: 20px;
+        padding: 0 10px;
     }}
     .date-section {{
-        margin: 12px 0;
+        margin: 15px 0;
         border-top: 1px solid #dcd1c0;
         border-bottom: 1px solid #dcd1c0;
-        padding: 10px 0;
+        padding: 12px 0;
     }}
     .date-main {{
         font-style: italic;
-        font-size: 20px;
+        font-size: 22px;
         color: #2c2c2c;
     }}
     .date-day {{
-        font-size: 30px;
+        font-size: 34px;
         font-weight: bold;
         color: #2c2c2c;
         line-height: 1.1;
     }}
     .date-month {{
-        font-size: 18px;
+        font-size: 20px;
         letter-spacing: 2px;
         font-weight: bold;
         text-transform: uppercase;
         color: #2c2c2c;
     }}
     .event-details {{
-        font-size: 11.5px;
+        font-size: 12px;
         color: #555;
         margin: 12px 0;
-        line-height: 1.3;
+        line-height: 1.4;
     }}
     .section-title {{
         font-weight: bold;
         letter-spacing: 2px;
-        margin: 12px 0 3px 0;
-        font-size: 13px;
+        margin: 15px 0 5px 0;
+        font-size: 14px;
     }}
     .btn-rsvp {{
         display: inline-block;
         background-color: #554d45;
         color: white !important;
-        padding: 7px 20px;
+        padding: 9px 24px;
         text-decoration: none;
         border-radius: 3px;
-        font-size: 11px;
+        font-size: 12px;
         letter-spacing: 1px;
-        margin: 8px 0;
+        margin: 12px 0;
         font-family: sans-serif;
         font-weight: bold;
     }}
@@ -167,9 +180,9 @@ html_content = f"""
         background-color: #3b352f;
     }}
 </style>
-</head>
-<body>
-    <div class="invitation-container">
+
+<div class="invitation-fullscreen">
+    <div class="invitation-card">
         <div class="header-year">2026</div>
         <div class="header-title">Wedding</div>
         
@@ -183,10 +196,10 @@ html_content = f"""
         </div>
         
         <div class="date-section">
-            <div style="font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #666;">Los esperamos el día</div>
+            <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #666;">Los esperamos el día</div>
             <div class="date-main">Sábado</div>
             <div class="date-day">21</div>
-            <div style="font-size: 11px; font-style: italic;">de</div>
+            <div style="font-size: 12px; font-style: italic;">de</div>
             <div class="date-month">Noviembre</div>
         </div>
         
@@ -201,20 +214,19 @@ html_content = f"""
         </div>
         
         <div class="section-title">VESTIMENTA</div>
-        <div style="font-style: italic; font-size: 13px; margin-bottom: 8px;">Formal</div>
+        <div style="font-style: italic; font-size: 14px; margin-bottom: 10px;">Formal</div>
         
-        <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px;">Confirma tu asistencia</div>
-        <div style="font-size: 8.5px; color: #777; margin-bottom: 4px;">POR FAVOR, CONFÍRNANOS VÍA WHATSAPP</div>
+        <div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-top: 15px;">Confirma tu asistencia</div>
+        <div style="font-size: 9px; color: #777; margin-bottom: 5px;">POR FAVOR, CONFÍRNANOS VÍA WHATSAPP</div>
         
         <a href="https://wa.me/5216670000000?text=¡Hola!%20Confirmo%20mi%20asistencia%20a%20su%20boda." target="_blank" class="btn-rsvp">CONFIRMA AQUÍ</a>
         
-        <div style="font-family: 'Brush Script MT', cursive; font-size: 18px; margin-top: 15px; color: #4a4a4a;">
+        <div style="font-family: 'Brush Script MT', cursive; font-size: 20px; margin-top: 15px; color: #4a4a4a;">
             ¡Gracias por acompañarnos!
         </div>
     </div>
-</body>
-</html>
+</div>
 """
 
-# Renderizar ajustado a la altura total de la ventana sin barras de desplazamiento de la página
-components.html(html_content, height=730, scrolling=False)
+# Renderizar directamente con st.markdown para evitar los límites del iframe
+st.markdown(invitation_html, unsafe_allow_html=True)
