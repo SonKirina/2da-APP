@@ -27,20 +27,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- PANEL LATERAL DE AYUDA / DEPURACIÓN ---
-with st.sidebar:
-  st.subheader("📁 Archivos en tu repositorio:")
-  try:
-    archivos_locales = os.listdir(".")
-    st.write(archivos_locales)
-  except Exception as e:
-    st.write("No se pudieron listar los archivos:", e)
-  st.info(
-    "Revisa aquí el nombre exacto con el que se subió tu foto de los novios."
-  )
 
-
-# Función para cargar imagen en Base64 de forma segura
+# Función genérica para cargar cualquier imagen local desde el repositorio en Base64
 def get_image_base64(file_path):
   if os.path.exists(file_path):
     with open(file_path, "rb") as f:
@@ -48,7 +36,7 @@ def get_image_base64(file_path):
   return None
 
 
-# 1. Cargar fondo
+# 1. Cargar el fondo de la invitación
 fondo_b64 = get_image_base64("Fondo_5_brillo.jpg")
 if fondo_b64:
   background_style = f"""
@@ -59,40 +47,12 @@ if fondo_b64:
 else:
   background_style = "background-color: #f2f1ed;"
 
-# 2. Cargar foto de los novios (búsqueda automática de nombres comunes)
-nombres_posibles = [
-    "Foto_Novios.jpg",
-    "Foto_Novios.png",
-    "novios.jpg",
-    "novios.png",
-    "boda.jpg",
-    "boda.png",
-    "foto.jpg",
-    "foto.png",
-    "pareja.jpg",
-    "pareja.png",
-    "Foto.jpg",
-    "Foto.png",
-]
-foto_path_encontrado = None
-for nombre in nombres_posibles:
-  if os.path.exists(nombre):
-    foto_path_encontrado = nombre
-    break
-
-foto_novios_b64 = (
-    get_image_base64(foto_path_encontrado) if foto_path_encontrado else None
-)
+# 2. Cargar la foto de los novios desde tu repositorio (Cambia "Foto_Novios.jpg" por el nombre real de tu archivo)
+foto_novios_b64 = get_image_base64("Foto_Novios.jpg")
 if foto_novios_b64:
-  ext = (
-      foto_path_encontrado.split(".")[-1].lower()
-      if foto_path_encontrado
-      else "jpg"
-  )
-  mime = "image/png" if ext == "png" else "image/jpeg"
-  foto_src = f"data:{mime};base64,{foto_novios_b64}"
+  foto_src = f"data:image/jpeg;base64,{foto_novios_b64}"
 else:
-  # Respaldo si no encuentra ninguna de las anteriores
+  # Imagen de respaldo por si el nombre del archivo no coincide exactamente
   foto_src = "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=600"
 
 # HTML y CSS de la invitación
@@ -228,6 +188,7 @@ html_content = f"""
             <div class="header-title">Wedding</div>
         </div>
         
+        <!-- Foto de los novios cargada desde tu repositorio local -->
         <img src="{foto_src}" class="photo-frame" alt="Boda">
         
         <div class="names">Carolina & Carlos</div>
