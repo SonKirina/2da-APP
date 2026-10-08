@@ -36,7 +36,7 @@ def get_image_base64(file_path):
   return None
 
 
-fondo_b64 = get_image_base64("Fondo_5_brillo.jpg")
+fondo_b64 = get_image_base64("Fondo_5.jpg")
 
 # Definir el estilo de fondo de forma segura
 if fondo_b64:
