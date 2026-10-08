@@ -1,5 +1,8 @@
 import base64
+from datetime import datetime
 import os
+import re
+import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -8,7 +11,7 @@ st.set_page_config(
     page_title="Invitación de Boda", page_icon="💍", layout="wide"
 )
 
-# Ocultar elementos de la interfaz de Streamlit y establecer fondo oscuro global
+# Ocultar elementos de la interfaz de Streamlit y establecer estilo global
 st.markdown(
     """
     <style>
@@ -19,8 +22,15 @@ st.markdown(
         background-color: #2b2b2b;
     }
     .block-container {
-        padding: 0px !important;
-        max-width: 100% !important;
+        padding: 2rem 1rem !important;
+        max-width: 500px !important;
+        margin: auto;
+    }
+    .divider {
+        text-align: center;
+        color: #dcd1c0;
+        font-size: 20px;
+        margin: 25px 0;
     }
     </style>
 """,
@@ -36,18 +46,17 @@ def get_image_base64(file_path):
   return None
 
 
-# 1. Cargar fondo
+# Cargar recursos gráficos
 fondo_b64 = get_image_base64("Fondo_5_brillo.jpg")
 if fondo_b64:
   background_style = f"""
-        background-image: linear-gradient(rgba(242, 241, 237, 0.92), rgba(242, 241, 237, 0.92)), url("data:image/jpeg;base64,{fondo_b64}");
+        background-image: linear-gradient(rgba(242, 241, 237, 0.95), rgba(242, 241, 237, 0.95)), url("data:image/jpeg;base64,{fondo_b64}");
         background-size: cover;
         background-position: center;
     """
 else:
   background_style = "background-color: #f2f1ed;"
 
-# 2. Cargar las fotos desde el repositorio
 foto_1_b64 = get_image_base64("Foto_1.jpg")
 foto_1_src = (
     f"data:image/jpeg;base64,{foto_1_b64}"
@@ -56,47 +65,27 @@ foto_1_src = (
 )
 
 foto_2_b64 = get_image_base64("Foto_2.jpg")
-foto_2_src = f"data:image/jpeg;base64,{foto_2_b64}" if foto_2_b64 else ""
-
 foto_3_b64 = get_image_base64("Foto_3.jpg")
-foto_3_src = f"data:image/jpeg;base64,{foto_3_b64}" if foto_3_b64 else ""
 
-# HTML y CSS de la invitación con galería optimizada
-html_content = f"""
+# Tarjeta principal de la invitación
+invitation_html = f"""
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <style>
-    body {{
-        margin: 0;
-        padding: 0;
-        background-color: #2b2b2b;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-    }}
-    .invitation-container {{
+    .invitation-card {{
         width: 100%;
-        max-width: 380px;
-        height: 100vh;
-        max-height: 850px;
+        max-width: 420px;
+        margin: 0 auto;
         {background_style}
-        padding: 25px 20px;
+        padding: 30px 20px;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         font-family: 'Times New Roman', serif;
         color: #333333;
         text-align: center;
         box-sizing: border-box;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-    }}
-    .invitation-container::-webkit-scrollbar {{
-        display: none;
     }}
     .header-year {{
         font-size: 24px;
@@ -114,30 +103,30 @@ html_content = f"""
         width: 100%;
         height: auto;
         border-radius: 6px;
-        margin: 10px 0;
+        margin: 15px 0;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         display: block;
     }}
     .names {{
         font-family: 'Brush Script MT', cursive, serif;
-        font-size: 36px;
+        font-size: 38px;
         color: #2c2c2c;
         margin: 5px 0;
     }}
     .message {{
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.4;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: #555555;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         padding: 0 5px;
     }}
     .date-section {{
-        margin: 8px 0;
+        margin: 12px 0;
         border-top: 1px solid #dcd1c0;
         border-bottom: 1px solid #dcd1c0;
-        padding: 8px 0;
+        padding: 10px 0;
     }}
     .date-main {{
         font-style: italic;
@@ -145,7 +134,7 @@ html_content = f"""
         color: #2c2c2c;
     }}
     .date-day {{
-        font-size: 28px;
+        font-size: 30px;
         font-weight: bold;
         color: #2c2c2c;
         line-height: 1.1;
@@ -158,54 +147,24 @@ html_content = f"""
         color: #2c2c2c;
     }}
     .event-details {{
-        font-size: 11px;
+        font-size: 12px;
         color: #555;
-        margin: 8px 0;
+        margin: 10px 0;
         line-height: 1.3;
     }}
     .section-title {{
         font-weight: bold;
         letter-spacing: 2px;
-        margin: 15px 0 5px 0;
-        font-size: 12px;
+        margin: 20px 0 5px 0;
+        font-size: 13px;
         color: #2c2c2c;
         border-top: 1px solid #dcd1c0;
-        padding-top: 12px;
-    }}
-    .btn-rsvp {{
-        display: inline-block;
-        background-color: #554d45;
-        color: white !important;
-        padding: 7px 20px;
-        text-decoration: none;
-        border-radius: 3px;
-        font-size: 11px;
-        letter-spacing: 1px;
-        margin: 6px 0;
-        font-family: sans-serif;
-        font-weight: bold;
-    }}
-    .btn-rsvp:hover {{
-        background-color: #3b352f;
-    }}
-    .story-photo {{
-        width: 100%;
-        height: auto;
-        border-radius: 6px;
-        margin: 10px 0;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-        display: block;
-    }}
-    .story-text {{
-        font-size: 11px;
-        font-style: italic;
-        color: #555;
-        margin-bottom: 8px;
+        padding-top: 15px;
     }}
 </style>
 </head>
 <body>
-    <div class="invitation-container">
+    <div class="invitation-card">
         <div>
             <div class="header-year">2026</div>
             <div class="header-title">Wedding</div>
@@ -241,28 +200,166 @@ html_content = f"""
         <div>
             <div class="section-title">VESTIMENTA</div>
             <div style="font-style: italic; font-size: 12px; margin-bottom: 5px;">Formal</div>
-            
-            <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 10px;">Confirma tu asistencia</div>
-            <div style="font-size: 8px; color: #777; margin-bottom: 4px;">POR FAVOR, CONFÍRNANOS VÍA WHATSAPP</div>
-            
-            <a href="https://wa.me/5216670000000?text=¡Hola!%20Confirmo%20mi%20asistencia%20a%20su%20boda." target="_blank" class="btn-rsvp">CONFIRMA AQUÍ</a>
-        </div>
-
-        <!-- SECCIÓN NUESTRA HISTORIA -->
-        <div>
-            <div class="section-title">NUESTRA HISTORIA</div>
-            <div class="story-text">Cada momento juntos nos ha traído hasta aquí...</div>
-            
-            {"<img src='" + foto_2_src + "' class='story-photo' alt='Nuestra Historia'>" if foto_2_b64 else ""}
-            {"<img src='" + foto_3_src + "' class='story-photo' alt='Nuestra Historia'>" if foto_3_b64 else ""}
-            
-            <div style="font-family: 'Brush Script MT', cursive; font-size: 18px; margin: 15px 0 5px 0; color: #4a4a4a;">
-                ¡Gracias por acompañarnos!
-            </div>
         </div>
     </div>
 </body>
 </html>
 """
 
-components.html(html_content, height=850, scrolling=False)
+components.html(invitation_html, height=730, scrolling=False)
+
+# --- SECCIÓN DE CONFIRMACIÓN DE ASISTENCIA ---
+st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
+st.markdown(
+    "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>💌 Confirmación de Asistencia</h3>",
+    unsafe_allow_html=True,
+)
+
+with st.container():
+  nombre = st.text_input("Nombre completo:")
+
+  telefono = st.text_input(
+      "Teléfono celular (10 dígitos):",
+      max_chars=10,
+      placeholder="Ej. 6671234567",
+  )
+
+  acompanantes = st.number_input(
+      "Número de acompañantes adicionales:",
+      min_value=0,
+      max_value=5,
+      step=1,
+      value=0,
+  )
+
+  nombres_acompanantes = []
+  if acompanantes > 0:
+    st.markdown(
+        "<p style='color: #f2f1ed !important; font-weight: 600; margin-top: 15px; margin-bottom: 5px;'>Nombres de tus acompañantes:</p>",
+        unsafe_allow_html=True,
+    )
+    for i in range(int(acompanantes)):
+      nombre_acomp = st.text_input(
+          f"Nombre completo del acompañante {i+1}:", key=f"acomp_{i}"
+      )
+      nombres_acompanantes.append(nombre_acomp)
+
+  asistencia = st.radio(
+      "¿Nos acompañarás?",
+      [
+          "Sí, ahí estaré con mucho gusto 🥂",
+          "Lamentablemente no podré asistir ❤️",
+      ],
+  )
+
+  restricciones = st.text_input("Alergias o restricciones alimentarias:")
+
+  enviar = st.button("Enviar Confirmación ✨", use_container_width=True)
+
+  if enviar:
+    nombre_clean = nombre.strip()
+    telefono_clean = re.sub(r"\D", "", telefono.strip())
+    lista_nombres_acomp = [
+        n.strip() for n in nombres_acompanantes if n.strip() != ""
+    ]
+
+    if not nombre_clean:
+      st.error(
+          "Por favor, ingresa tu nombre completo antes de enviar la confirmación."
+      )
+    elif len(telefono_clean) != 10:
+      st.error(
+          "Por favor, ingresa un número de teléfono celular válido a 10 dígitos (ej. 6671234567)."
+      )
+    elif acompanantes > 0 and len(lista_nombres_acomp) < acompanantes:
+      st.error("Por favor, completa los nombres de todos tus acompañantes.")
+    else:
+      try:
+        df = pd.read_csv("asistentes.csv")
+      except FileNotFoundError:
+        df = pd.DataFrame(
+            columns=[
+                "Fecha_Registro",
+                "Nombre",
+                "Telefono",
+                "Asistencia",
+                "Acompañantes",
+                "Nombres_Acompañantes",
+                "Restricciones",
+                "Mesa",
+            ]
+        )
+
+      if "Telefono" not in df.columns:
+        df["Telefono"] = ""
+
+      cadena_acompanantes = (
+          ", ".join(lista_nombres_acomp) if lista_nombres_acomp else "Ninguno"
+      )
+
+      nuevo_dato = pd.DataFrame([
+          {
+              "Fecha_Registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+              "Nombre": nombre_clean,
+              "Telefono": telefono_clean,
+              "Asistencia": asistencia,
+              "Acompañantes": acompanantes,
+              "Nombres_Acompañantes": cadena_acompanantes,
+              "Restricciones": restricciones,
+              "Mesa": "Por asignar",
+          }
+      ])
+
+      df = pd.concat([df, nuevo_dato], ignore_index=True)
+      df.to_csv("asistentes.csv", index=False)
+
+      st.balloons()
+      st.markdown(
+          f"""
+            <div style="
+                background-color: #fcfbf9; 
+                padding: 16px; 
+                border-radius: 8px; 
+                border: 1px solid #dcd1c0;
+                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+                margin: 10px 0px;
+                text-align: center;
+                font-family: 'Times New Roman', serif;">
+                <span style="font-size: 18px; margin-right: 8px;">✅</span>
+                <span style="color: #2c2c2c; font-weight: bold;">
+                    ¡Muchas gracias <strong>{nombre_clean}</strong>! Hemos recibido tu confirmación.
+                </span>
+            </div>
+            """,
+          unsafe_allow_html=True,
+      )
+
+# --- SECCIÓN NUESTRA HISTORIA ---
+st.markdown('<div class="divider">❦ ❦ ❦</div>', unsafe_allow_html=True)
+st.markdown(
+    "<h3 style='text-align: center; color: #f2f1ed; font-family: Times New Roman, serif;'>NUESTRA HISTORIA</h3>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<p style='text-align: center; color: #dcd1c0; font-style: italic; font-size: 14px;'>Cada momento juntos nos ha traído hasta aquí...</p>",
+    unsafe_allow_html=True,
+)
+
+if foto_2_b64:
+  st.image(
+      f"data:image/jpeg;base64,{foto_2_b64}",
+      use_container_width=True,
+      caption="Nuestra Historia",
+  )
+
+if foto_3_b64:
+  st.image(
+      f"data:image/jpeg;base64,{foto_3_b64}",
+      use_container_width=True,
+      caption="Nuestra Historia",
+  )
+
+st.markdown(
+    "<div style='text-align: center; font-family: Brush Script MT, cursive; font-size: 26px; margin: 30px 0 10px 0; color: #dcd1c0;'>¡Gracias por acompañarnos!</div>",
+    unsafe_allow_html=True,
+)
