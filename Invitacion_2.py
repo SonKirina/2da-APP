@@ -15,7 +15,7 @@ st.markdown(
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    .stApp {
+    .stApp {{
         background-color: #2b2b2b;
-    }
+    }}
     .block
