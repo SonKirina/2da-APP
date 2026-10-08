@@ -117,8 +117,8 @@ st.markdown(
     .event-details {{
         font-size: 12px;
         color: #555;
-        margin: 10px 0;
-        line-height: 1.3;
+        margin: 8px 0;
+        line-height: 1.4;
         text-align: center;
     }}
     .section-title {{
@@ -130,6 +130,22 @@ st.markdown(
         border-top: 1px solid #dcd1c0;
         padding-top: 15px;
         text-align: center;
+    }}
+    .link-btn {{
+        display: inline-block;
+        background-color: #554d45;
+        color: white !important;
+        padding: 6px 15px;
+        text-decoration: none;
+        border-radius: 3px;
+        font-size: 11px;
+        letter-spacing: 1px;
+        margin-top: 6px;
+        font-family: sans-serif;
+        font-weight: bold;
+    }}
+    .link-btn:hover {{
+        background-color: #3b352f;
     }}
     .divider {{
         text-align: center;
@@ -196,16 +212,29 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# --- NUEVAS SECCIONES: MISA, FIESTA Y MESA DE REGALOS ---
 st.markdown(
     """
+    <div class="section-title">⛪ MISA</div>
     <div class="event-details">
-        <b>MISA INICIA A LAS 18:00 HORAS</b><br>
-        Parroquia Santiago Apóstol, Pueblo Puc.
+        <b>Sábado 21 de Noviembre | 18:00 hrs</b><br>
+        Parroquia Santiago Apóstol, Pueblo Puc.<br>
+        <a href="https://maps.google.com" target="_blank" class="link-btn">VER UBICACIÓN</a>
     </div>
+
+    <div class="section-title">🥂 FIESTA</div>
     <div class="event-details">
-        <b>RECEPCIÓN 20:00 HORAS</b><br>
-        Salón Yec
+        <b>Sábado 21 de Noviembre | 20:00 hrs</b><br>
+        Salón Yec<br>
+        <a href="https://maps.google.com" target="_blank" class="link-btn">VER UBICACIÓN</a>
     </div>
+
+    <div class="section-title">🎁 MESA DE REGALOS</div>
+    <div class="event-details">
+        Su presencia es nuestro mejor regalo, pero si desean tener un detalle con nosotros, pueden consultar nuestra mesa de regalos.<br>
+        <a href="https://www.liverpool.com.mx" target="_blank" class="link-btn">VER MESA DE REGALOS</a>
+    </div>
+
     <div class="section-title">VESTIMENTA</div>
     <div style="font-style: italic; font-size: 12px; margin-bottom: 5px; text-align: center;">Formal</div>
     """,
@@ -289,73 +318,3 @@ with st.container():
           "Por favor, ingresa tu nombre completo antes de enviar la confirmación."
       )
     elif len(telefono_clean) != 10:
-      st.error(
-          "Por favor, ingresa un número de teléfono celular válido a 10 dígitos (ej. 6671234567)."
-      )
-    elif acompanantes > 0 and len(lista_nombres_acomp) < acompanantes:
-      st.error("Por favor, completa los nombres de todos tus acompañantes.")
-    else:
-      try:
-        df = pd.read_csv("asistentes.csv")
-      except FileNotFoundError:
-        df = pd.DataFrame(
-            columns=[
-                "Fecha_Registro",
-                "Nombre",
-                "Telefono",
-                "Asistencia",
-                "Acompañantes",
-                "Nombres_Acompañantes",
-                "Restricciones",
-                "Mesa",
-            ]
-        )
-
-      if "Telefono" not in df.columns:
-        df["Telefono"] = ""
-
-      cadena_acompanantes = (
-          ", ".join(lista_nombres_acomp) if lista_nombres_acomp else "Ninguno"
-      )
-
-      nuevo_dato = pd.DataFrame([
-          {
-              "Fecha_Registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-              "Nombre": nombre_clean,
-              "Telefono": telefono_clean,
-              "Asistencia": asistencia,
-              "Acompañantes": acompanantes,
-              "Nombres_Acompañantes": cadena_acompanantes,
-              "Restricciones": restricciones,
-              "Mesa": "Por asignar",
-          }
-      ])
-
-      df = pd.concat([df, nuevo_dato], ignore_index=True)
-      df.to_csv("asistentes.csv", index=False)
-
-      st.balloons()
-      st.markdown(
-          f"""
-            <div style="
-                background-color: #fcfbf9; 
-                padding: 16px; 
-                border-radius: 8px; 
-                border: 1px solid #dcd1c0;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-                margin: 10px 0px;
-                text-align: center;
-                font-family: 'Times New Roman', serif;">
-                <span style="font-size: 18px; margin-right: 8px;">✅</span>
-                <span style="color: #2c2c2c; font-weight: bold;">
-                    ¡Muchas gracias <strong>{nombre_clean}</strong>! Hemos recibido tu confirmación.
-                </span>
-            </div>
-            """,
-          unsafe_allow_html=True,
-      )
-
-st.markdown(
-    "<div style='text-align: center; font-family: Brush Script MT, cursive; font-size: 26px; margin: 30px 0 10px 0; color: #2c2c2c;'>¡Gracias por acompañarnos!</div>",
-    unsafe_allow_html=True,
-)
